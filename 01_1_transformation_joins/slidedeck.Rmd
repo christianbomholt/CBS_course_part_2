@@ -1,0 +1,126 @@
+---
+title: 'R Course CBS <img src="./../img/PA.png" height="60" width="60"> '
+subtitle: " </br> Tranformation af data"
+author: "Christian Bomholt"
+date: "2019-02-14"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+library(readr)
+library(dplyr)
+library(DT)
+shower <- function(df){
+  datatable(df %>% head(5), options = list(dom='tp'), rownames = F)
+}
+```
+
+
+---
+
+background-image: url("./../img/PA.png")
+background-size: 150px
+background-position: 90% 8%
+
+# Indhold af modul
+
+- join/merge af data i `dplyr`
+
+---
+
+class: inverse, middle
+
+# sammensætning af datasæt med `dplyr`
+
+---
+
+## Band data
+
+Using these two data sets we will look at ways of combining data sets using keys.
+
+```{r}
+band_members
+```
+
+
+```{r}
+band_instruments
+```
+
+---
+
+# Join types
+
+```{r, eval=FALSE}
+inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ...)
+
+left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+
+right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ...)
+
+full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+
+semi_join(x, y, by = NULL, copy = FALSE, ...)
+
+nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
+  ...)
+
+anti_join(x, y, by = NULL, copy = FALSE, ...)
+```
+
+<img src="./../img/PA.png" height="60" width="60">
+
+---
+
+# Inner join + full outer
+
+```{r}
+band_members %>% inner_join(band_instruments)
+```
+
+
+```{r}
+band_members %>% full_join(band_instruments2, by = c("name" = "artist"))
+```
+
+
+
+---
+
+class: inverse, middle
+
+# Opgave
+
+---
+class: inverse, middle
+
+
+## Exercise 2.3
+
+### Airport data set
+
+Try to join the 3 data sets
+
+- Airports
+- Airlines
+- Flights
+
+
+```{r,eval=FALSE}
+load("../data/flights.rdata")
+read_csv("../data/airlines.csv")
+read_csv("../data/airports.csv")
+```
+
+
+

@@ -1,0 +1,159 @@
+---
+title: 'R Practitioner <img src="./../img/PA.png" height="60" width="60"> '
+subtitle: " </br> Creating and Evaluating Regression Models"
+author: "Christian Bomholt"
+date: "2019/1/23"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r, include=FALSE,echo=FALSE,message=FALSE,warning=FALSE}
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(pacman))
+suppressPackageStartupMessages(library(readxl))
+df <- read_excel('../data/xl/R.xlsx',col_names = T)
+df$Date <- as.Date(df$Date,origin = '1970-01-01')
+
+```
+
+
+background-image: url("./../img/PA.png")
+background-size: 150px
+background-position: 90% 8%
+
+class: inverse, middle
+
+
+## Data
+
+Vores target variabel er den hungarske 10 årige rente i perioden 30. januar 2010 til 31. marts 2017. Som forklarende variable har vi et sammensurium af makroøkonomiske, e.g. CPI, Current account, trade balance etc. samt variable afledt fra det finansielle marked e.g. FX volatilitet, CDS og forward renter.
+
+
+--- 
+
+---
+
+## Data
+
+```{r}
+DT::datatable(df %>% subset(select=c(Date,Yield,CDS,CA,Forwards,NDF)) 
+              %>% head(6), options = list(dom='t'),rownames = F)
+```
+
+---
+
+## Data
+
+```{r,eval=TRUE,echo=FALSE,fig.width=11, fig.height=5.5}
+library(plotly)
+p <- df %>%
+  tidyr::gather(variable, value, -Date) %>%
+  transform(id = as.integer(factor(variable))) %>%
+  plot_ly(x = ~Date, y = ~value, color = ~variable, colors = "Dark2",
+          yaxis = ~paste0("y", id)) %>%
+  add_lines() %>% 
+  subplot(nrows = 5, shareX = TRUE)
+p
+```
+
+---
+
+## Transformation med `dplyr`
+
+Ønskes lags eller lignende kreeres det led ved brug af `dplyr`
+
+```{r}
+library(dplyr)
+df <- df %>% 
+mutate(lag1=lag(Yield),
+       lag2=lag(Yield,2),
+       movave=(lag1+lag2)/2)
+```
+
+```{r,echo=FALSE}
+df[is.na(df)] <- 7
+```
+
+
+---
+
+## Linær regression af tidsserie
+
+Simpel regression foretages med linear models `lm()` fra `stats`, denne udregner blot
+
+$$
+\hat{\beta} = (X^TX)^{-1}X^T y \\
+$$
+samt omkringværende stats. Syntaxen `Yield~.` betyder at Yield ønskes forklaret ved brug af alle variable  
+
+```{r}
+fit <- lm(Yield~.,data = df)
+```
+
+---
+
+## Linær regression
+
+Hvis kun et udsnit ønskes brugt skrives eksempelvis
+
+```{r}
+fit <- lm(Yield~CDS+M2+CPI,data = df)
+```
+
+betydende 
+
+$$
+  \text{yield}_t = \alpha + \beta_1 \text{CDS}_t + \beta_2\text{M2}_t + \beta_3 \text{CPI}_t 
+$$
+
+```{r}
+fit$coefficients
+```
+
+---
+
+## Print af statistics
+
+Pakken `broom` gør dette meget mere behageligt end `base` løsningen `summary(fit)`
+
+```{r}
+broom::tidy(fit)
+```
+
+---
+
+class: inverse, middle
+
+
+## Exercise 3.1
+
+PAru ønsker endvidere en model som forklarer sammenhængen mellem Volumen og pris for konventionelle avokadoer i Albany. 
+
+- Fit en model for avocado pris-sættet
+- Modellen skal lade AveragePrice som funktion af Total volume
+- Undersøg koefficienter
+- Plot evt. regressions-linjen
+
+$$
+  \text{AveragePrice} = \alpha + \beta \cdot \text{Total Volume} + \varepsilon, \quad \varepsilon \sim N(0,1)  
+$$
+
+```{r,eval=FALSE}
+library(readr)
+avocados <- read_csv("../data/avocado.csv") %>%
+  filter(region=="Albany") %>% 
+  filter(type=="conventional")
+```
+
