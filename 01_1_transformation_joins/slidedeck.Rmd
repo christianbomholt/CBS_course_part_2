@@ -1,6 +1,6 @@
 ---
 title: 'R Course CBS <img src="./../img/PA.png" height="60" width="60"> '
-subtitle: " </br> Tranformation af data"
+subtitle: " </br> Merge af datasets"
 author: "Christian Bomholt"
 date: "2019-02-14"
 output:
@@ -33,6 +33,9 @@ background-position: 90% 8%
 # Indhold af modul
 
 - join/merge af data i `dplyr`
+
+Merging datasets is a well known disciplin in Data-science. This is done by joining rows using a common key. 
+
 
 ---
 
@@ -106,7 +109,7 @@ class: inverse, middle
 
 
 ## Exercise 2.3
-
+  
 ### Airport data set
 
 Try to join the 3 data sets
